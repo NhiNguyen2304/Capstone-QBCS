@@ -1,0 +1,85 @@
+﻿@model IEnumerable<QBCS.Service.ViewModel.ImportViewModel>
+@using QBCS.Service.Enum
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int count = 0;
+}
+
+@Styles.Render("~/bundles/content/datatables")
+
+<h2>Import history</h2>
+<div class="card shadow mb-4">
+
+    <div class="card-body text-custom">
+        <div class="table-responsive text-custom">
+            <table class="table table-bordered table-striped text-custom table-striped" id="import-history-table">
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Owner
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                        <th>
+                            Success
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            count++;
+                            <tr>
+                                <td>
+                                    @count
+                                </td>
+                                <td>
+                                    @item.OwnerName
+                                </td>
+                                <td>
+                                    @item.Date
+                                </td>
+                                <td>
+                                    @item.TotalQuestion
+                                </td>
+                                <td>
+                                    @item.TotalSuccess
+                                </td>
+                                <td>
+                                    @item.Status.ToString()
+                                </td>
+                                <td>
+                                    @if (item.Status == StatusEnum.Checked || item.Status == StatusEnum.Editing)
+                                    {
+                                        if (User.CheckPermission(typeof(QBCS.Web.Controllers.ImportController), nameof(QBCS.Web.Controllers.ImportController.GetResult)))
+                                        {
+                                        <a class="btn btn-primary spinner-loading" href="@Url.Action("GetResult", "Import", new { importId = item.Id })">View Result</a>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/script/datatables")

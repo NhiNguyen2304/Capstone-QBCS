@@ -1,0 +1,152 @@
+﻿@model List<List<QBCS.Service.ViewModel.RuleViewModel>>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col">
+        <h2>Rules</h2>
+    </div>
+    <div class="col mb-2">
+        <a href="@Url.Action("Edit", "Rule")" class="btn btn-primary float-right spinner-loading">Edit Rule</a>
+    </div>
+</div>
+@foreach (List<QBCS.Service.ViewModel.RuleViewModel> rvm in Model)
+{
+    <div class="card shadow mb-4">
+        <a href="#collapse_@rvm.FirstOrDefault().GroupTypeEnum" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+            <h6 class="m-0 font-weight-bold text-primary">@rvm.FirstOrDefault().GroupTypeEnum.ToString().Replace("_", " ") Rule</h6>
+        </a>
+        <div class="card-body collapse show" id="collapse_@rvm.FirstOrDefault().GroupTypeEnum" style="padding-left:30px">
+            <div class="table-responsive">
+                <table class="table table-bordered text-custom" @*id="dataTable"*@ cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="width:30%">Name</th>
+                            <th class="col-sm">Value</th>
+                            <th style="width:30%">Created Date</th>
+                            <th style="width:30%">Activated Date</th>
+                            <th>In Use</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var rule in rvm)
+                        {
+                            if (rule.Id == 3 || rule.Id == 9 || rule.Id == 12 || rule.Id == 15)
+                            {
+                                <tr>
+                                    <td>@rule.Name</td>
+                                    <td>
+                                        @if (rule.Value.Count != 0)
+                                        {
+                                            <div class="bs-example">
+                                                <div data-role="tagsinput">
+                                                    @foreach (var value in rule.Value)
+                                                    {@value.Value <br />}
+                                                </div>
+                                                @*<input type="text" data-role="tagsinput" id="input_@rule.Value.FirstOrDefault().KeyId" placeholder="Add text" value="" />*@
+                                                @*<select multiple data-role="tagsinput">
+                                                        @foreach (var value in rule.Value)
+                                                        {
+                                                            <option value="@value.Value">@value.Value</option>
+                                                        }
+                                                    </select>*@
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (rule.Value.Count != 0)
+                                        {
+                                            @rule.Value.FirstOrDefault().CreateDate.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (rule.Value.Count != 0)
+                                        {
+                                            @rule.Value.FirstOrDefault().ActivateDate.ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (rule.Value.Count == 0)
+                                        {
+                                            <i class="fas fa-fw fa-close"></i>
+                                        }
+                                        else if (rule.Value.FirstOrDefault().IsUse)
+                                        {
+                                            <i class="fas fa-fw fa-check"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-close"></i>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var value in rule.Value)
+                                {
+                                    <tr>
+                                        <td>@rule.Name</td>
+                                        @if (rule.Id == 16 || rule.Id == 17)
+                                        {
+                                            if (value.Value.Contains("True"))
+                                            {
+                                                <td>Yes</td>
+                                            }
+                                            else
+                                            {
+                                                <td>No</td>
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <td>@value.Value</td>
+                                        }
+                                        <td>@value.CreateDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@value.ActivateDate.ToString("dd/MM/yyyy")</td>
+                                        @if (value.IsUse)
+                                        {
+                                            <td>
+                                                <i class="fas fa-fw fa-check"></i>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                <i class="fas fa-fw fa-close"></i>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+@*<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput.js"></script>
+    <link rel="stylesheet" href="~/Scripts/bootstrap-tagsinput.css">
+    <script type="text/javascript" src="~/Scripts/bootstrap-tagsinput.min.js"></script>*@
+@*<script>
+        $('#input_3').tagsinput({
+            itemValue: 'value',
+            itemText: 'text',
+            typeahead: {
+                source: function (query) {
+                    return $.getJSON('cities.json');
+                }
+            }
+        });
+
+        $('#input_3').tagsinput('add', { "value": 1, "text": "Amsterdam" });
+        $('#input_3').tagsinput('add', { "value": 4, "text": "Washington" });
+        $('#input_3').tagsinput('add', { "value": 7, "text": "Sydney" });
+        $('#input_3').tagsinput('add', { "value": 10, "text": "Beijing" });
+        $('#input_3').tagsinput('add', { "value": 13, "text": "Cairo" });
+    </script>*@

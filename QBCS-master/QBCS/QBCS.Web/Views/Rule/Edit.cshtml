@@ -1,0 +1,155 @@
+﻿@model List<List<QBCS.Service.ViewModel.RuleViewModel>>
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@*<head>
+        <link rel="stylesheet" href="~/Content/bootstrap-tagsinput.css" />
+        <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+        <script src="~/Scripts/bootstrap-tagsinput.js"></script>
+        <script src="~/Scripts/sweetalert.min.js"></script>
+        <script src="~/Scripts/myjs/staffjs/edit-rule.js"></script>
+    </head>*@
+@Styles.Render("~/bundle/content/tagsinputrule")
+<h2>Rules</h2>
+<div class="mb-4 row col-md-12">
+    <div class="mr-2">
+        <p>Default Activation Date: </p>
+    </div>
+    <div class="form-group col-md-3">
+        <input type="date" id="default_datetime" class="form-control input-date" />
+    </div>
+</div>
+@foreach (List<QBCS.Service.ViewModel.RuleViewModel> rvm in Model)
+{
+    <div class="card shadow mb-4">
+        <a href="#collapse_@rvm.FirstOrDefault().GroupTypeEnum" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+            <h6 class="m-0 font-weight-bold text-primary">@rvm.FirstOrDefault().GroupTypeEnum.ToString().Replace("_", " ") Rule</h6>
+        </a>
+        <div class="card-body collapse show" id="collapse_@rvm.FirstOrDefault().GroupTypeEnum" style="padding-left:30px">
+            @*<button class="btn btn-primary" onclick="addField(event,'table_@rvm.FirstOrDefault().GroupTypeEnum','@rvm.FirstOrDefault().Value.FirstOrDefault().')">Add @rvm.FirstOrDefault().GroupTypeEnum Banned Word</button>*@
+            <div class="table-responsive">
+                <table class="table table-bordered text-custom" id="table_@rvm.FirstOrDefault().GroupTypeEnum" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="width:30%">Name</th>
+                            <th class="col-sm-1">Value</th>
+                            <th class="col-sm">Activated Date</th>
+                            <th class="text-center">In Use</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var rule in rvm)
+                        {
+                            if (rule.Id == 3 || rule.Id == 9 || rule.Id == 12 || rule.Id == 15)
+                            {
+                                <tr>
+                                    <td hidden id="id">@rule.Id</td>
+                                    <td>@rule.Name</td>
+                                    <td>
+                                        @* Any changes make to this line must also change at
+                                            bootstrap-tagsinput.js line 142*@
+                                        <select multiple id="select_@rule.Id" data-role="tagsinput">
+                                            @if (rule.Value.Count != 0)
+                                            {
+                                                foreach (var value in rule.Value)
+                                                {
+                                                    <option selected="selected" value="@value.Value">@value.Value</option>
+                                                }
+                                            }
+                                        </select> <br />
+                                        Check case sensitive
+                                        @if (rule.Value.Count == 0)
+                                        {
+                                            <input type="checkbox" id="case_sensitive" />
+                                        }
+                                        else if (rule.Value.FirstOrDefault().IsCaseSensitive)
+                                        {
+                                            <input type="checkbox" id="case_sensitive" checked />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="case_sensitive" />
+                                        }
+                                    </td>
+                                    <td>
+                                        <input type="date" id="date" class="form-control input-date">
+                                    </td>
+                                    <td>
+                                        @if (rule.Value.Count == 0)
+                                        {
+                                            <input type="checkbox" id="is_use" />
+                                        }
+                                        else if (rule.Value.FirstOrDefault().IsUse)
+                                        {
+                                            <input type="checkbox" id="is_use" checked />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="is_use" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var value in rule.Value)
+                                {
+                                    <tr>
+                                        <td hidden id="id">@value.KeyId</td>
+                                        <td>@rule.Name</td>
+                                        @if (rule.Id == 16 || rule.Id == 17)
+                                        {
+                                            <td>
+                                                <div>
+                                                    Yes
+                                                    @if (value.Value.Contains("True"))
+                                                    {
+                                                        <input type="checkbox" id="value" checked />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" id="value" />
+                                                    }
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="col-sm-1">
+                                                <input style="width:inherit !important" type="text" class="form-control" id="value" name="@value.Value" value="@value.Value" placeholder="@value.Value" />
+                                            </td>
+                                        }
+                                        <td>
+                                            <input type="date" id="date" class="form-control input-date">
+                                        </td>
+                                        <td>
+                                            @if (value.IsUse)
+                                            {
+                                                <input type="checkbox" id="is_use" checked />
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" id="is_use" />
+                                            }
+                                        </td>
+                                        @*<td>@value.ValueGroup</td>*@
+                                    </tr>
+                                }
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="text-right">
+    <a href="@Url.Action("Index", "Rule")" class="btn border-dark text-custom mr-2 spinner-loading">Cancel</a>
+    <button id="save" class="btn btn-primary">Save</button>
+</div>
+@Scripts.Render("~/bundle/scripts/tagsinputrule")

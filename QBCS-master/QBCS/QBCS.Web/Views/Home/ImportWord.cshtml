@@ -1,0 +1,141 @@
+﻿@model QBCS.Service.ViewModel.UserViewModel
+@{
+    /**/
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int selectedCourse = TempData["CourseId"] != null ? (int)TempData["CourseId"] : 0;
+}
+
+@Styles.Render("~/bundle/content/autocompleteLecturer")
+@Styles.Render("~/bundle/content/importfile")
+<div class="container-fluid ml-5">
+    <div class="row">
+        <a href="~/Content/file/QBCS_Word_Template.doc" class="col-md-10 mb-2" download>
+            <button type="submit" class="btn btn-primary float-right mt-2 mr-4">Download MS Word Template <i class="fa fa-download ml-1"></i></button>
+        </a>
+    </div>
+    <div class="row">
+
+        <div class="col-md-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Import Question</h6>
+                </div>
+                <div class="card-body">
+
+                    @using (Ajax.BeginForm("ImportFile", "Question", "", new AjaxOptions()
+                    {
+                        OnSuccess = "turnon_modal",
+                        HttpMethod = "POST",
+
+
+                    }, new { enctype = "multipart/form-data" }))
+                    {
+
+                        @*@using (Html.BeginForm("ImportFile", "Question", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {*@
+                        <!-- COMPONENT START -->
+                        <i class="text-dark text-custom">Enter owner name:</i>
+                        <div class="form-group pb-2 ui-widget">
+                            <input id="myautocomplete" class="form-control text-custom border-dark" value="@TempData["OwnereName"]" />
+                            <input id="autocompleteLecturerId" name="owner" hidden />
+                        </div>
+                        <i class="text-dark text-custom">Choose a course:</i>
+                        <div class="form-group pb-2">
+                            @if (Model == null || Model.Courses == null || Model.Courses.Count == 0)
+                            {
+                                <select class="form-control text-custom border-dark">
+                                    <option selected>[None course available]</option>
+                                </select>
+                            }
+                            else
+                            {
+                                @Html.DropDownList("courseId", Model.Courses.Select(c => new SelectListItem
+                           {
+                               Value = c.CourseId + "",
+                               Text = c.Code + " - " + c.Name,
+                               Selected = c.CourseId == selectedCourse
+                           }), new { @class = "form-control text-custom border-dark" })
+                            }
+                            @*<input id="autocompleteCourse" class="form-control text-custom border-dark"/>
+                <input id="autocompleteCourseId" name="courseId" hidden />*@
+                        </div>
+
+                        <i class="text-dark text-custom">Choose unit type:</i>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-outline-dark active">
+                                <input type="radio" name="prefix" autocomplete="off" checked value="Learning Outcome"> Learning Outcome
+                            </label>
+                            <label class="btn btn-outline-dark">
+                                <input type="radio" name="prefix" autocomplete="off" value="Topic"> Topic
+                            </label>
+                            <label class="btn btn-outline-dark">
+                                <input type="radio" name="prefix" autocomplete="off" value="Chapter"> Chapter
+                            </label>
+                            <label class="btn btn-outline-dark">
+                                <input type="radio" name="prefix" autocomplete="off" value="Unit"> Unit
+                            </label>
+                            <label class="btn btn-outline-dark">
+                                <input type="radio" name="prefix" autocomplete="off" value=""> [None Prefix]
+                            </label>
+                        </div>
+                        <div class="custom-control custom-checkbox text-custom">
+                            <input type="checkbox" name="checkSemantic" value="true" class="custom-control-input" id="defaultChecked3">
+                            <label class="custom-control-label" for="defaultChecked3">Check Semantic</label>
+                        </div>
+                        <!-- COMPONENT END -->
+                        <div class="form-group text-custom mt-3">
+                            @*<i class="text-dark text-custom">Choose a file:</i>
+                                <div class="input-group input-file text-custom" name="questionFile">
+                                    <input type="text" class="form-control border-dark" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-import-file btn-choose" type="button">Choose</button>
+                                    </span>
+                                </div>*@
+                            <div class="input-group input-file text-custom" name="questionFile" id="drop_file_zone" ondrop="upload_file(event)" ondragover="addClassDrop(event)" ondragleave="removeClassDrop(event)">
+                                <div class="col-12">
+                                    <input type="text" class="form-control border-0 col-12" id="inFile" required />
+                                    <input type="file" id="selectfile" name="questionFile" class="hidden">
+                                    <span class="input-group-btn col-2">
+                                        <i class="fa fa-2x fa-cloud-upload-alt text-primary mr-2"></i>
+                                        <span class="text-gray-500">Drag and Drop or Click to Import file</span>
+                                        <button class="btn btn-import-file btn-choose" type="button">Choose</button>
+                                    </span>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary float-right" id="btnImport">Import</button>
+                            <button type="reset" class="btn btn-outline-light float-right border-dark text-custom mr-2">Cancel</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="success-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Processing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p>Your import questions are<b> processing</b>.</p>
+                <p>We will notifiy you when it has the result</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+@Scripts.Render("~/bundle/scripts/importfile")
+@Scripts.Render("~/bundle/scripts/autocompleteLecturer")
+@Scripts.Render("~/bundle/scripts/unobtrusive")
+@Scripts.Render("~/bundle/scripts/dragFile")

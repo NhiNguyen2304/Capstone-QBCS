@@ -1,0 +1,60 @@
+﻿@model IEnumerable<QBCS.Service.ViewModel.CourseViewModel>
+
+@{
+
+    ViewBag.Title = "List Course";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var counter = 0;
+}
+@Styles.Render("~/bundles/content/datatables")
+<div class="card shadow mb-4">
+    <div class="card-header">
+        <h5>List all course</h5>
+        @if (TempData["ViewHistory"] != null && (bool)TempData["ViewHistory"])
+        {
+            <a href="@Url.Action("Staff_CourseStatistic", "Course")" class="btn btn-primary float-right spinner-loading">View Statistic</a>
+        }
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-bordered text-custom" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        @{counter++; }
+                        <td>
+                            @counter
+                        </td>
+                        <td>
+                            @Html.DisplayFor(course => item.Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(course => item.Name)
+                        </td>
+                        <td class="text-center">
+                            @if (TempData["CreateExam"] != null && (bool)TempData["CreateExam"])
+                            {
+                                <a href="@Url.Action("GenerateExam", "Examination", new { courseId = item.Id})" class="btn btn-primary spinner-loading">Create Automated Exam</a>
+                                <a href="@Url.Action("CreateExamManually", "Examination", new { courseId = item.Id})" class="btn btn-primary spinner-loading mt-1">Create Manual Exam</a>
+                            }
+                            @if (TempData["ViewHistory"] != null && (bool)TempData["ViewHistory"])
+                            {
+                                <a href="@Url.Action("GetHistoryCourse", "Examination", new { courseId = item.Id})" class="btn btn-primary float-right spinner-loading">View history</a>
+                                <a href="@Url.Action("Syllabus", "Course", new { courseId = item.Id})" class="btn btn-info float-right mr-2 spinner-loading">Edit Syllabus</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@Scripts.Render("~/bundles/script/datatables")

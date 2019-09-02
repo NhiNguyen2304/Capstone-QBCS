@@ -1,0 +1,80 @@
+﻿@model QBCS.Service.ViewModel.CourseViewModel
+
+@{
+    ViewBag.Title = "Create Exam Manually";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/bundles/content/datatables")
+@Styles.Render("~/bundle/content/category")
+@Styles.Render("~/bundle/content/smartwizard")
+@Styles.Render("~/bundle/content/checkbox")
+<div class="row" id="move-btn-group">
+    <div class="col mb-2">
+        <button type="button" class="btn btn-info float-right" data-toggle="modal" data-target="#modal">Review Exam</button>
+    </div>
+</div>
+<div class="row">
+    <div style="max-height: 100vh; overflow-y: auto; margin-bottom: 30px" class="list-group list-group-root well col-md-3 text-custom show-category-exam">
+        @Html.Partial("ListCategoryCreateExam", Model)
+    </div>
+    <div id="list-question-exam" class="col-md-9" data-id="@Model.Id">
+        <div class="row"></div>
+        @* Render list question here *@
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review Exam</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body table-counter">
+                <div class="row">
+                    <div class="col-7">
+                        <p id="numberEasyQuestion">Minimum grade of Ordinary Student:  0/100</p>
+                        <p id="numberMediumQuestion">Minimum grade of Good Student: 0/100</p>
+                        <p id="numberHardQuestion">Minimum grade of Excellent Student: 0/100</p>
+                    </div>
+                    <div class="col-5">
+                        <p id="easyQuestion">Number of Easy Question: 0</p>
+                        <p id="mediumQuestion">Number of Medium Question: 0</p>
+                        <p id="hardQuestion">Number of Hard Question: 0</p>
+                        <p id="totalQuestion">Total Question: 0</p>
+                    </div>
+                </div>
+                <div class="table-responsive text-custom">
+                    <table class="table table-bordered text-custom" id="listQuestionExam" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Code</th>
+                                <th>Question Content</th>
+                                <th>Topic/LO</th>
+                                <th>Level</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("SaveQuestionToExam", "Examination", new { @class = "form-group-exam" }))
+                {
+                    <div class="form-group-exam">
+                        <input type="hidden" name="courseId" value="@Model.Id" />
+                    </div>
+                    <button id="btnSaveManually" type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/script/datatables")
+@Scripts.Render("~/bundle/scripts/category")
+@Scripts.Render("~/bundle/scripts/smartwizard")
+

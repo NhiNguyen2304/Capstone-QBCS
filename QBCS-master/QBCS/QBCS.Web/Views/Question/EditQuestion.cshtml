@@ -1,0 +1,191 @@
+﻿@model QBCS.Service.ViewModel.QuestionDetailViewModel
+
+@{
+    ViewBag.Title = "Edit Question";
+    var counter = 0;
+}
+
+@Styles.Render("~/bundle/content/checkbox")
+@Styles.Render("~/bundle/content/detailquestion")
+
+<h2>Edit Question</h2>
+<a href="@Url.Action("EditQuestionWithTextbox","Question", new { id = Model.Question.Id})">Edit Question with textbox</a>
+@using (Html.BeginForm("UpdateQuestion", "Question", FormMethod.Post, new { @class = "form-group" }))
+{
+    <div class="container text-custom">
+        <div class="col-lg-8">
+
+            <div class="form-group">
+                <input type="hidden" name="Id" value="@Model.Question.Id" />
+
+            </div>
+            <div class="form-group text-custom">
+                <label>Question</label>
+                <div class="customs-display customs-display-area question-custom" id="QuestionContent" contenteditable="true" data-for="hidden-question-content">
+                    @Html.DisplayFor(model => model.Question.QuestionContent)
+
+                </div>
+                <div id="question-image-container">
+                    @if (Model.Question.Images != null)
+                    {
+                        <label>Image in Question</label>
+                        foreach (var img in Model.Question.Images)
+                        {
+                            <p>
+                                <span class="float-right delete-image" data-delete="#ques-img-@img.Id"><i class="fa fa-times-circle text-danger"></i></span>
+                                <img class="exam-image mt-2" onclick="img_zoom(this)" src="data:image/png;base64, @img.Source" />
+                                <input type="hidden" name="ImagesInput" value="@img.Source" />
+                            </p>
+                        }
+                    }
+                </div>
+                <div id="question-upload" class="row">
+                    <output id="result" />
+                </div>
+
+
+                <span class="btn btn-primary btn-img mt-2">
+                    Add Image <input id="uploadImage" type="file" accept="image/*" name="image" multiple />
+                </span>
+
+
+                @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+                @Html.ValidationMessageFor(model => model.Question.QuestionContent, "", new { @class = "text-danger" })
+                <input type="hidden" name="QuestionContent" value="@Model.Question.QuestionContent" id="hidden-question-content" />
+            </div>
+            <span class="error-block">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mr-7" })
+            </span>
+            @*<label>Options</label>
+                @foreach (var option in Model.Question.Options)
+                {
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="hidden" name="Options[@counter].Id" value="@option.Id" />
+
+                        </div>
+
+
+                        <div class="col-lg-10">
+                            <div class="customs-display customs-display-input option-customs" contenteditable="true" data-for="#o-@counter">
+                                @Html.DisplayFor(m => option.OptionContent)
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control hidden-option" name="Options[@counter].OptionContent" type="hidden" value="@option.OptionContent" id="o-@counter" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label class="el-switch el-switch-green">
+                                    @if (option.IsCorrect == true)
+                                    {
+                                        <input name="Options[@counter].IsCorrect" value="true" type="checkbox" checked />
+                                    }
+                                    else
+                                    {
+                                        <input name="Options[@counter].IsCorrect" value="true" type="checkbox" />
+                                    }
+
+                                    <span class="el-switch-style"></span>
+                                </label>
+                            </div>
+                            @{ counter++; }
+                        </div>
+                    </div>
+                    <br />
+                }*@
+            <h5>Options</h5>
+            <div id="option-list-container">
+
+                @for (var i = 0; i < Model.Question.Options.Count; i++)
+                {
+
+                    @Html.EditorFor(m => m.Question.Options[i], new { index = i + 1 })
+
+                }
+            </div>
+            <div class="row mb-4">
+                <span class="text-primary add-option"><i class="fa fa-plus-circle"></i> Add Option</span>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select name="CategoryId" class="form-control">
+                    <option>---Select an Option---</option>
+                    @if (Model.Categories != null)
+                    {
+                        foreach (var c in Model.Categories)
+                        {
+                            if (c.Id == Model.Question.CategoryId)
+                            {
+                                <option selected value="@c.Id">@c.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        }
+                    }
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Learning Outcome</label>
+                <select name="LearningOutcomeId" class="form-control">
+                    <option>---Select an Option---</option>
+                    @if (Model.LearningOutcomes != null)
+                    {
+                        foreach (var lo in Model.LearningOutcomes)
+                        {
+                            if (lo.Id == Model.Question.LearningOutcomeId)
+                            {
+                                <option selected value="@lo.Id">@lo.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@lo.Id">@lo.Name</option>
+                            }
+                        }
+                    }
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Level</label>
+                <select name="LevelId" class="form-control">
+                    <option>---Select an Option---</option>
+                    @if (Model.Levels != null)
+                    {
+                        foreach (var l in Model.Levels)
+                        {
+                            if (l.Id == Model.Question.LevelId)
+                            {
+                                <option selected value="@l.Id">@l.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@l.Id">@l.Name</option>
+                            }
+                        }
+                    }
+                </select>
+            </div>
+            <div class="row">
+                <input type="hidden" name="CourseId" value="@Model.Question.CourseId" />
+                <div class="float-right col-md-12">
+                    <input type="submit" name="Update" value="Update" class="btn btn-primary float-right ml-2 spinner-loading" id="btnUpdate" />
+                    <a class="btn btn-default border-dark text-custom float-right spinner-loading" href="@Url.Action("CourseDetail", "Course", new { courseId=Model.Question.CourseId })">Cancel</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+
+
+@Scripts.Render("~/bundle/scripts/editquestion")
+@Scripts.Render("~/bundle/scripts/processtext")

@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{35AB65C1-3951-4408-BB08-3C26EF926C41}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DuplicateQuestion</RootNamespace>
+    <AssemblyName>DuplicateQuestion</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Imaging.2.2.5\lib\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WordNetClasses">
+      <HintPath>..\..\..\wordnetdotnet-master\wordnetdotnet-master\Library\cs\bin\Debug\WordNetClasses.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CheckDuplicatedImage.cs" />
+    <Compile Include="DuplicateUtils.cs" />
+    <Compile Include="Entity\ImageModel.cs" />
+    <Compile Include="Entity\ImportModel.cs" />
+    <Compile Include="Entity\LevelEnum.cs" />
+    <Compile Include="Entity\OptionModel.cs" />
+    <Compile Include="Entity\QuestionModel.cs" />
+    <Compile Include="Entity\StatusEnum.cs" />
+    <Compile Include="Entity\TypeEnum.cs" />
+    <Compile Include="LevenshteinDistance.cs" />
+    <Compile Include="NLPAlgorithm.cs" />
+    <Compile Include="NLP\DemoTest.cs" />
+    <Compile Include="NLP\ISimilarity.cs" />
+    <Compile Include="NLP\Matcher\BipartiteMatcher.cs" />
+    <Compile Include="NLP\Matcher\HeuristicMatcher.cs" />
+    <Compile Include="NLP\Relatedness.cs" />
+    <Compile Include="NLP\SentenceSimilarity.cs" />
+    <Compile Include="NLP\SimilarGenerator.cs" />
+    <Compile Include="NLP\TextHelper\Acronym.cs" />
+    <Compile Include="NLP\TextHelper\ExtOverlapCounter.cs" />
+    <Compile Include="NLP\TextHelper\SimpleOverlapCounter.cs" />
+    <Compile Include="NLP\TextHelper\StopWordsHandler.cs" />
+    <Compile Include="NLP\TextHelper\Tokeniser.cs" />
+    <Compile Include="NLP\WordSenseDisambiguator.cs" />
+    <Compile Include="NLP\WordSimilarity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringUtils.cs" />
+    <Compile Include="TFAlgorithm.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

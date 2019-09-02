@@ -1,0 +1,55 @@
+﻿@model IEnumerable<QBCS.Service.ViewModel.CourseViewModel>
+@using QBCS.Service.ViewModel
+@{
+    /**/
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Styles.Render("~/bundles/content/datatables")
+
+<div class="card shadow mb-4">
+    <div class="card-header">
+        <h5>List all course</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-bordered text-custom" id="dataTable" cellspacing="0">
+            <thead>
+                <tr class="text-center">
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Total Questions</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr onClick="document.location.href='@Url.Action("CourseDetail", "Course", new { courseId = item.CourseId })'">
+                        <td class="text-center">
+                            @Html.DisplayFor(course => item.Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(course => item.Name)
+                        </td>
+                        <td class="text-center">
+                            @Html.DisplayFor(course => item.Total)
+                        </td>
+                        <td>
+                            <a class="btn btn-primary spinner-loading" href="@Url.Action("CourseDetail", "Course", new { courseId = item.CourseId })" data-toggle="tooltip" title="View detail"><i class="fa fa-eye"></i></a>
+                            <a class="btn btn-info spinner-loading" href="@Url.Action("Category", "Course", new { courseId = item.CourseId })" data-toggle="tooltip" title="Manage categories"><i class="fa fa-list-alt"></i></a>
+
+                            @if (item.WarningTotal > 0)
+                            {
+                            <a href="@Url.Action("CheckBankResult", "Question", new { courseId = item.CourseId})" class="btn btn-warning"><i class="fa fa-exclamation-triangle" data-toggle="tooltip" title="View duplicated warning"></i> <span class="badge badge-danger">@item.WarningTotal</span></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/script/datatables")

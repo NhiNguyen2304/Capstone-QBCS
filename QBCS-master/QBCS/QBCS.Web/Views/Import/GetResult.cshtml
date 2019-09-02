@@ -1,0 +1,130 @@
+﻿@model QBCS.Service.ViewModel.GetResultViewModel
+@using QBCS.Service.Enum
+
+@{
+    /**/
+
+    ViewBag.Title = "GetResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/bundles/content/datatables")
+@Styles.Render("~/bundle/content/tab")
+
+<h4>Result</h4>
+<h6>Subject: @TempData["course"]</h6>
+@{
+
+    //int total = Model.Questions.Count;
+    //int editable = Model.Questions.Where(q => q.Status == StatusEnum.Editable).Count();
+    ////int delete = Model.Questions.Where(q => q.Status == StatusEnum.Delete).Count();
+    //int success = Model.Questions.Where(q => q.Status == StatusEnum.Success).Count();
+    //int invalid = Model.Questions.Where(q => q.Status == StatusEnum.Invalid).Count();
+
+<div id="question-import">
+    <input id="importId" value="@Model.ImportId" hidden />
+    <div class="tabs tabs-style-topline">
+        <nav>
+            <ul>
+                <li><a href="#section-topline-1" id="section-editable"><span>Editable (<span id="total-editable">@Model.editableNumber</span>/@Model.totalNumber)</span></a></li>
+                <li><a href="#section-topline-3" id="section-success"><span>Success (<span id="total-success">@Model.successNumber</span>/@Model.totalNumber)</span></a></li>
+                <li><a href="#section-topline-4" id="section-invalid"><span>Invalid (<span id="total-invalid">@Model.invalidNumber</span>/<span id="total-question">@Model.totalNumber</span>)</span></a></li>
+                <li><a href="#section-topline-2" id="section-delete"><span>Delete (<span id="total-delete">@Model.deleteNumber</span>/@Model.totalNumber)</span></a></li>
+            </ul>
+        </nav>
+        <div class="content-wrap">
+            <section id="section-topline-1">
+                @*@{
+                        var editList = Model.Questions.Where(q => q.Status == StatusEnum.Editable);
+
+                        var importFile = "active toggle-table";
+                        var bank = "toggle-table";
+                        var importFileHidden = "";
+                        var bankHidden = "hidden";
+
+                        if (editList.Where(q => q.IsInImportFile).Count() > 0)
+                        {
+                            if (editList.Where(q => !q.IsInImportFile).Count() == 0)
+                            {
+                                bank = "disabled";
+                            }
+                        }
+                        else
+                        {
+                            if (editList.Where(q => !q.IsInImportFile).Count() > 0)
+                            {
+                                bank = "active toggle-table";
+                                importFile = "disabled";
+                                bankHidden = "";
+                                importFileHidden = "hidden";
+                            }
+                        }
+
+                    }*@
+                <div id="editable">
+                    @Html.Partial("_ListQuestionWithDuplicate", new ViewDataDictionary { { "tableId", "tableEditable" }, { "importId", Model.ImportId } })
+                </div>
+            </section>
+
+            <section id="section-topline-3">
+                <div id="success">
+                    @Html.Partial("_ListQuestionWithDuplicate", new ViewDataDictionary { { "tableId", "tableSuccess" }, { "importId", Model.ImportId } })
+                </div>
+            </section>
+            <section id="section-topline-4">
+                <div id="invalid">
+                    @Html.Partial("_ListQuestionWithDuplicate", new ViewDataDictionary { { "tableId", "tableInvalid" }, { "importId", Model.ImportId } })
+                </div>
+            </section>
+            <section id="section-topline-2">
+                <div id="delete">
+                    @Html.Partial("_ListQuestionWithDuplicate", new ViewDataDictionary { { "tableId", "tableDelete" }, { "importId", Model.ImportId } })
+                </div>
+            </section>
+        </div><!-- /content -->
+    </div><!-- /tabs -->
+
+</div>
+    
+    <div class="modal fade" tabindex="-1" role="dialog" id="import-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are your sure want to save these questions?</p>                 
+                    <p>- <b><span id="txtNotInsert">@Model.NotInsertNumber</span>/@Model.totalNumber</b> will not insert to bank</p>
+                    <p>- <b><span id="txtCheckAgain">@Model.RecheckNumber</span>/@Model.totalNumber</b> will be checked again</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="import-btn" @*data-id="@Model.Id"*@ data-id="@Model.ImportId">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="cancel-import-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are your sure want cancel this?</p>
+                    <p>All your question in this import will be removed</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-spinner" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-spinner" id="cancel-import-btn" @*data-id="@Model.Id"*@ data-id="@Model.ImportId">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+}
+@Scripts.Render("~/bundles/script/datatables")
+@Scripts.Render("~/bundle/scripts/tab")
+@Scripts.Render("~/bundle/scripts/tabresult")
+@Scripts.Render("~/bundle/scripts/importfile")

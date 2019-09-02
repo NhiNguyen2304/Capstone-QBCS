@@ -1,0 +1,175 @@
+﻿@model QBCS.Service.ViewModel.GenerateExamViewModel
+
+@{
+    ViewBag.Title = "Examinaton Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Examinaton Report</h2>
+
+@if (Model.IsEnough && Model.IsSyllabusHaveLO || Model.IsManually)
+{
+    <h5>Total examinations : @Model.TotalExam</h5>
+    <table class="table table-bordered text-custom" id="dataTable" width="100%" cellspacing="0">
+        <tr>
+            <th>Percent of level question</th>
+            <th>Number of question by level</th>
+            <th>Grade</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>
+                <p>Percent of Easy Question : @Model.EasyPercent</p>
+                <p>Percent of Medium Question : @Model.MediumPercent</p>
+                <p>Percent of Hard Question : @Model.HardPercent</p>
+            </td>
+            <td>
+                <p>Easy Question : @Model.EasyQuestion</p>
+                <p>Medium Question : @Model.MediumQuestion</p>
+                <p>Hard Question : @Model.HardQuestion</p>
+                <b>Total Question : @Model.TotalQuestion</b>
+            </td>
+            <td>
+                <p>Minimum grade of Ordinary Student : @Model.OrdinaryGradeCalculate / 100</p>
+                <p>Minimum grade of Good Student : @Model.GoodGradeCalculate / 100</p>
+                <p>Minimum grade of Excellent Student : @Model.ExcellentGradeCalculate / 100</p>
+            </td>
+            <td>
+                <a href="@Url.Action("ViewGeneratedExamination", "Examination", new { examGroup = Model.GroupExam })" class="btn btn-primary spinner-loading" role="button">Review Examination</a>
+            </td>
+        </tr>
+    </table>
+    if (Model.Syllabus != null || Model.LearningOutcomeInExam != null)
+    {
+        <div class="row mt-3">
+            @if (Model.Syllabus != null && Model.Syllabus.Count != 0)
+            {
+                <table class="table text-custom table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Syllabus</th>
+                            <th>Topic/LO</th>
+                            <th>Total</th>
+                            <th>Easy</th>
+                            <th>Medium</th>
+                            <th>Hard</th>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var syl in Model.Syllabus)
+                        {
+                            <tr>
+                                <td rowspan="@syl.LearingOutcomesInExam.Count">@syl.Name</td>
+                                <td>@syl.LearingOutcomesInExam[0].Name</td>
+                                <td>@syl.LearingOutcomesInExam[0].TotalQuestionInExam</td>
+                                <td>@syl.LearingOutcomesInExam[0].EasyQuestion</td>
+                                <td>@syl.LearingOutcomesInExam[0].MediumQuestion</td>
+                                <td>@syl.LearingOutcomesInExam[0].HardQuestion</td>
+                            </tr>
+                            for (int i = 1; i < syl.LearingOutcomesInExam.Count; i++)
+                            {
+                                <tr>
+                                    <td>@syl.LearingOutcomesInExam[i].Name</td>
+                                    <td>@syl.LearingOutcomesInExam[i].TotalQuestionInExam</td>
+                                    <td>@syl.LearingOutcomesInExam[i].EasyQuestion</td>
+                                    <td>@syl.LearingOutcomesInExam[i].MediumQuestion</td>
+                                    <td>@syl.LearingOutcomesInExam[i].HardQuestion</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            } else
+            {
+                <table class="table text-custom table-striped">
+                    <thead>
+                        <tr>
+                            <th>Topic/LO</th>
+                            <th>Total</th>
+                            <th>Easy</th>
+                            <th>Medium</th>
+                            <th>Hard</th>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var lo in Model.LearningOutcomeInExam)
+                        {
+                            <tr>
+                                <td>@lo.Name</td>
+                                <td>@lo.TotalQuestionInExam</td>
+                                <td>@lo.EasyQuestion</td>
+                                <td>@lo.MediumQuestion</td>
+                                <td>@lo.HardQuestion</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+        </div>
+    }
+    <div class="row form-group">
+        <div>
+            <h5>File extension :</h5>
+        </div>
+        <input type="hidden" name="examGroupExportAll" value="@Model.GroupExam" />
+
+        <div class="col-lg-2">
+            <select id="fileExtensionExportAll" class="form-control">
+                <option value="xml">XML</option>
+                <option value="gift">GIFT</option>                
+            </select>
+        </div>
+        <input type="button" id="exportAllInReport" name="Export" value="Export All" class="btn btn-primary float-right btnExport" />
+    </div>
+}
+else
+{
+    <table class="table table-bordered text-custom" id="dataTable" width="100%" cellspacing="0">
+        <tr>
+            <th>Percent of level question</th>
+            <th>Number of question by level</th>
+            <th>Grade</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>
+                <p>Percent of Easy Question : @Model.EasyPercent</p>
+                <p>Percent of Medium Question : @Model.MediumPercent</p>
+                <p>Percent of Hard Question : @Model.HardPercent</p>
+            </td>
+            <td>
+                <p>Easy Question : @Model.EasyQuestionGenerrate / @Model.EasyQuestion</p>
+                <p>Medium Question : @Model.MediumQuestionGenerrate / @Model.MediumQuestion</p>
+                <p>Hard Question : @Model.HardQuestionGenerrate / @Model.HardQuestion</p>
+                <b>Total Question : @Model.TotalQuestionGenerrate / @Model.TotalQuestion</b>
+                @if (Model.MediumQuestion != Model.MediumQuestionGenerrate)
+                {
+                    <p style="color:red">Insufficient number of medium questions in question bank</p>
+                }
+                @if (Model.EasyQuestion != Model.EasyQuestionGenerrate)
+                {
+                    <p style="color:red">Insufficient number of easy questions in question bank</p>
+                }
+                @if (Model.HardQuestion != Model.HardQuestionGenerrate)
+                {
+                    <p style="color:red">Insufficient number of hard questions in question bank</p>
+                }
+                @if (Model.IsSyllabusHaveLO == false)
+                {
+                    <p style="color:red">Syllabus don't contain any LOC</p>
+                }
+            </td>
+            <td>
+                <p>Minimum grade of Ordinary Student : @Model.OrdinaryGradeCalculate / 100</p>
+                <p>Minimum grade of Good Student : @Model.GoodGradeCalculate / 100</p>
+                <p>Minimum grade of Excellent Student : @Model.ExcellentGradeCalculate / 100</p>
+            </td>
+            <td>
+                <a href="@Url.Action("GetAllExamination", "Examination")" class="btn btn-primary spinner-loading" role="button">Cancel</a>
+            </td>
+        </tr>
+    </table>
+}
+@Scripts.Render("~/bundle/scripts/smartwizard")
+

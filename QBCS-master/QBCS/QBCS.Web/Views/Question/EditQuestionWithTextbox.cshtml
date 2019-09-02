@@ -1,0 +1,219 @@
+﻿@model QBCS.Service.ViewModel.QuestionViewModel
+
+@{
+    ViewBag.Title = "EditQuestionWithTextbox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var optionLetter = "abcdefghijklmnopqrstuvwxyz".ToArray();
+    string option = "";
+    string question = "";
+    string answer = "<tr> <td> <p>ANSWER:</p> </td>" + "<td> <p>";
+    string image = "";
+    if (Model.Images != null)
+    {
+        foreach (var img in Model.Images)
+        {
+            image = image + "<p><img src='data:image/png;base64," + img.Source + "' /></p>";
+        }
+    }
+    string table = "";
+    int category = Model.CategoryId;
+    int level = Model.LevelId;
+    int learningoutcome = Model.LearningOutcomeId;
+
+    for (int i = 0; i < Model.Options.Count; i++)
+    {
+        var optionImg = "";
+        if (Model.Options[i].Images != null && Model.Options[i].Images.Count() != 0)
+        {
+            foreach (var optionImage in Model.Options[i].Images)
+            {
+                optionImg = optionImg + "<p><img src='data:image/png;base64," + optionImage.Source + "' /></p>";
+            }
+        }
+
+        option = option + "<tr> <td> <p>" + optionLetter[i] + ".</p> </td>" + "<td> <p>" + Model.Options[i].OptionContent
+                                        .Replace("<", "&lt;")
+                                        .Replace(">", "&gt;")
+                                        .Replace("&lt;cbr&gt;", "<br/>")
+                                        .Replace("[html]", "")
+                                        + "</p>" + optionImg + " </td> </tr>";
+        if (Model.Options[i].IsCorrect)
+        {
+            answer = answer + optionLetter[i];
+        }
+        else if (Model.Options[i].IsCorrect && i == Model.Options.Count - 1)
+        {
+            answer = answer + optionLetter[i] + "</p> </td> </tr>";
+        }
+    }
+    var code = "";
+    if (Model.Code != null)
+    {
+        code = Model.Code;
+    }
+    var questionContent = Model.QuestionContent
+                                        .Replace("<", "&lt;")
+                                        .Replace(">", "&gt;")
+                                        .Replace("&lt;cbr&gt;", "<br/>")
+                                        .Replace("[html]", "");
+    question = "<tr> <td width='138' valign='top'> <p>QN=" + code + "</p> </td>" + "<td width='495' valign='top'><p>" + questionContent + "</p> <p>" + image + "</p> </td> </tr>";
+
+    table = "<table border='1' cellspacing='0' cellpadding='0' width='0'> <tbody>" + question + option + answer
+            + "</tbody> </table>";
+    var test = table;
+}
+
+<head>
+    <script type='text/javascript' src='~/Scripts/myjs/textWord/textboxio/textboxio.js'></script>
+    <link rel="stylesheet" type="text/css" href="~/Scripts/myjs/textWord/example.css" />
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+
+</head>
+<body onload="instantiateTextbox();">
+    <h2>Edit Question with textbox</h2>
+    <a href="@Url.Action("GetQuestionTemp","Import", new { tempId = Model.Id})">Edit Question with form</a>
+    <div class="row">
+        <div class="col-md-12" style="height:35em">
+            <textarea id="textbox" name="questionTextBox" style="height:100% !important">
+
+                </textarea>
+            <div class="col-md-12">
+                <input id="questionId" value="@Model.Id" hidden />
+                <input id="categoryname" value="@category" hidden/>
+                <input id="levelname" value="@level"  hidden/>
+                <input id="learningoutcomename" value="@learningoutcome" hidden/>
+                <select class="form-control" id="Categories" >\
+                    <option>---Select a Category---</option>
+                </select>
+                <select class="form-control" id="LearningOutcomes">
+                    <option>---Select a Learning Outcome---</option>
+                </select>
+                <select class="form-control" id="Levels">
+                    <option>---Select a Level---</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top:5px">
+                <button type="submit" class="btn btn-primary float-right" id="editSave">Submit</button>
+                <a class="btn btn-default float-right" href="@Url.Action("GetResult", "Import",new { importId  = Model.ImportId})">Cancel</a>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $('#textbox').html('@table');
+        var instantiateTextbox = function () {
+            textboxio.replaceAll('textarea', {
+                paste: {
+                    style: 'clean',
+                }
+            });
+    };
+
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            data:
+            {
+                id : @Model.CourseId
+            },
+            url: "@Url.Action("GetCategoriesInCourse","Question")",
+            dataType: "json",
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    var category = $("#categoryname").val();
+                    if (result[i].Id == category) {
+                        $("#Categories").append('<option id="' + result[i].Id + '" selected>' +
+                            result[i].Name + '</option>');
+                    } else {
+                        $("#Categories").append('<option id="' + result[i].Id + '">' +
+                            result[i].Name + '</option>');
+                    }           
+                }
+            },
+            error: function (result) {
+                alert("Error");
+            }
+        });
+        
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "@Url.Action("GetLevels","Question")",
+            dataType: "json",
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].Id == "@level") {
+                        $("#Levels").append('<option id="' + result[i].Id + '" selected>' +
+                            result[i].Name + '</option>');
+                    } else {
+                        $("#Levels").append('<option id="' + result[i].Id + '">' +
+                            result[i].Name + '</option>');
+                    }
+                }
+            },
+            error: function (result) {
+                alert("Error");
+            }
+        });
+        
+        $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            data:
+            {
+                id : @Model.CourseId
+            },
+            url: "@Url.Action("GetLearningOutcomesInCourse","Question")",
+            dataType: "json",
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].Id == "@learningoutcome") {
+                        $("#LearningOutcomes").append('<option id="' + result[i].Id + '" selected>' +
+                            result[i].Name + '</option>');
+                    } else {
+                        $("#LearningOutcomes").append('<option id="' + result[i].Id + '">' +
+                            result[i].Name + '</option>');
+                    }
+                }
+            },
+            error: function (result) {
+                alert("Error");
+            }
+        });
+
+        $('#editSave').on('click', function (event) {
+            event.preventDefault();
+            var editors = textboxio.get('#textbox');
+            var editor = "";
+            editor = editors[0].content.get();
+            editor = '<body>' + editor + '</body>';
+            var Obj = {};
+            Obj["Table"] = editor;
+            Obj["CategoryId"] = $("#Categories option:selected").attr("id");
+            Obj["LevelId"] = $("#Levels option:selected").attr("id");
+            Obj["LearningOutcomeId"] = $("#LearningOutcomes option:selected").attr("id");
+            Obj["QuestionId"] = $("#questionId").val();
+            $.ajax({
+                type: "POST",
+                url: '/Question/UpdateQuestionWithTextBox',
+                data: JSON.stringify(Obj),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.success == true) {
+                        document.location.href = "/Course/CourseDetail?courseId=" + @Model.CourseId;
+                    } else {
+                        toastr.error("Edit error. Please try again!");
+                        setTimeout(location.reload.bind(location), 1000);
+                    }
+
+                },
+                error: function (response) {
+                    toastr.error("Edit error. Please try again!");
+                }
+            });
+        });
+    });
+</script>

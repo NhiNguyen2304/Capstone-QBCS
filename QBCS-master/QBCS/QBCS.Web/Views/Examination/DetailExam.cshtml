@@ -1,0 +1,124 @@
+﻿@model QBCS.Service.ViewModel.ExaminationViewModel
+
+@{
+    ViewBag.Title = "Detail Exam";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/bundles/content/datatables")
+@if (Model.IsNewest)
+{
+    <div class="row">
+        <div class="col mb-2">
+            <a href="@Url.Action("ViewGeneratedExamination","Examination", new {examGroup = Model.ExamGroup })" class="btn btn-primary float-right mb-2">Edit Examinations</a>
+        </div>
+    </div>
+}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Examination Code : @Model.ExamCode</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+        </div>
+        <div>
+            <table class="table table-striped text-custom" id="dataTableExam" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Code</th>
+                        <th>Question</th>
+                        <th>Level</th>
+                        <th>Topic/Learning Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var part in Model.PartOfExam)
+                    {
+                        foreach (var question in part.Question)
+                        {
+                            <tr>
+                                <td></td>
+                                <td>@question.QuestionCode</td>
+                                <td>
+                                    <div>
+                                        <p>@question.QuestionContent</p>
+                                        @if (question.Images != null)
+                                        {
+                                            foreach (var image in question.Images)
+                                            {
+                                                <p><img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" /></p>
+                                            }
+                                        }
+                                        @{int charater = 0; }
+                                        @foreach (var option in question.Options)
+                                        {
+                                            char prefixOption = (char)(charater + 65);
+                                            if (option.IsCorrect == true)
+                                            {
+                                                <div class="row">
+                                                    <div class="container-fluid text-right-answer">
+                                                        @prefixOption.ToString(). @option.OptionContent
+                                                    </div>
+                                                    @if (option.Images != null)
+                                                    {
+                                                        foreach (var image in option.Images)
+                                                        {
+                                                            <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="row">
+                                                    <div class="container-fluid">
+                                                        @prefixOption.ToString(). @option.OptionContent
+                                                    </div>
+                                                    @if (option.Images != null)
+                                                    {
+                                                        foreach (var image in option.Images)
+                                                        {
+                                                            <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                            charater++;
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    @question.Level.Name
+                                </td>
+                                <td>
+                                    @if (part.LearningOutcome != null)
+                                    {
+                                        @Html.DisplayFor(lo => part.LearningOutcome.Name)
+                                    }
+                                </td>
+                            </tr>
+                                                }
+                                            }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<form id="exportDetailExamination">
+    <div class="row form-group">
+        <div>
+            <h5>File extension :</h5>
+        </div>
+        <input type="hidden" name="examinationId" value="@Model.Id" />
+
+        <div class="col-lg-2">
+            <select id="fileExtension" class="form-control">
+                <option value="xml">XML</option>
+                <option value="gift">GIFT</option>               
+            </select>
+        </div>
+        <input type="submit" name="Export" value="Export" class="btn btn-primary float-right" />
+    </div>
+</form>
+@Scripts.Render("~/bundles/script/datatables")
+@Scripts.Render("~/bundle/scripts/smartwizard")

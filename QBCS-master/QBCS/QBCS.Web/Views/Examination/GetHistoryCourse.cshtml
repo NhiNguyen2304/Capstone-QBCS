@@ -1,0 +1,103 @@
+﻿@model IEnumerable<QBCS.Service.ViewModel.QuestionInExamViewModel>
+@{
+    ViewBag.Title = "GetHistoryCourse";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string alpha = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+}
+@Styles.Render("~/bundles/content/datatables")
+@Styles.Render("~/bundle/content/smartwizard")
+<h2>Exam history</h2>
+
+@if (Model.Count() > 0)
+{
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">History questions</h6>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive text-custom table-counter">
+                <table class="table table-bordered table-hover text-custom" id="datatable-history-exam" width="100%" cellspacing="0">
+                    <thead class="text-center">
+                        <tr>
+                            <th>No.</th>
+                            <th>Code</th>
+                            <th>Question</th>
+                            <th>Category</th>
+                            <th>Level</th>
+                            <th>Priority</th>
+                            <th>Frequency</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="@item.Id">
+                                <td></td>
+                                <td>@item.QuestionCode</td>
+                                <td>
+                                    @Html.DisplayFor(modeItem => item.QuestionContent)
+                                    @if (item.Images != null)
+                                    {
+                                        foreach (var image in item.Images)
+                                        {
+                                            <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                        }
+                                    }
+                                    @for (var i = 0; i < item.Options.Count; i++)
+                                    {
+                                        if (item.Options[i].IsCorrect == true)
+                                        {
+                                            <div class="container-fluid text-right-answer">
+                                                @(alpha[i] + ".") @Html.DisplayFor(optionItem => item.Options[i].OptionContent)
+                                                @if (item.Options[i].Images != null)
+                                                {
+                                                    foreach (var image in item.Options[i].Images)
+                                                    {
+                                                        <br />
+                                                        <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                                    }
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="container-fluid">
+                                                @(alpha[i] + ".") @Html.DisplayFor(optionItem => item.Options[i].OptionContent)
+                                                @if (item.Options[i].Images != null)
+                                                {
+                                                    foreach (var image in item.Options[i].Images)
+                                                    {
+                                                        <br />
+                                                        <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                                    }
+                                                }
+                                            </div>
+                                        }
+
+                                        <br />
+                                    }
+                                </td>
+                                <td>@item.LearningOutcomeName</td>
+                                <td>@(item.LevelId != 0 ? ((QBCS.Service.Enum.LevelEnum)item.LevelId).ToString() : "[No level]")</td>
+                                <td>@item.Priority</td>
+                                <td>@item.Frequency</td>
+                                <td>
+                                    <a href="@Url.Action("GetExaminationHistory", "Question", new { id = item.Id})" class="btn btn-primary">History</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h5>There is no question in this course</h5>
+}
+@Scripts.Render("~/bundles/script/datatables")
+@Scripts.Render("~/bundle/scripts/smartwizard")

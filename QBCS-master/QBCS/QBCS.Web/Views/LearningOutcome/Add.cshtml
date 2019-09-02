@@ -1,0 +1,85 @@
+﻿@model QBCS.Service.ViewModel.LearningOutcomeViewModel
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header">
+        <h3 class="m-0 font-weight-bold text-primary">Add Learning Outcome</h3>
+    </div>
+
+    <div class="card-body" style="padding-left:30px">
+        <div id="error" style="color:red"></div>
+        <div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal text-custom">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-12">
+                            <input class="form-control" type="text" id="Name" name="Name" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-12">
+                            <input class="form-control" type="text" id="Code" name="Code" />
+                        </div>
+                    </div>
+
+                    @*<div class="form-group">
+                        @Html.LabelFor(model => model.CourseId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.CourseId, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.CourseId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CourseId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-12">
+                            <select class="form-control" id="Course" disabled></select>
+
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="form-group">
+                            <button id="add" class="btn btn-primary float-right spinner-loading">Add</button>
+                            <a href="@Url.Action("Detail", "Course", new { itemID = Model.CourseId})" class="btn btn-outline-light float-right border-dark text-custom mr-2 spinner-loading">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script>
+    $(document).ready(function () {
+    $.ajax({
+        type: "GET",
+        contentType: "application/json; charset=utf-8",
+        url: "@Url.Action("LoadCourse","LearningOutcome")",
+        dataType: "json",
+        success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    if (result[i].Id == @Model.CourseId) {
+                        $("#Course").append("<option id=" + result[i].Id + " selected>" +
+                            result[i].Name + "</option>");
+                    }
+                }
+
+        },
+        error: function (result) {
+            alert("Error");
+        }
+    });
+    });
+
+</script>

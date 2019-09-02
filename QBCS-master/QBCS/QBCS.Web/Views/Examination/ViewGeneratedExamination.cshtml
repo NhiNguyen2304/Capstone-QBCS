@@ -1,0 +1,164 @@
+﻿@model List<QBCS.Service.ViewModel.ExaminationViewModel>
+@{
+    ViewBag.Title = "Generate Exam";
+    var counter = 0;
+    var no = 0;
+}
+
+@using (Html.BeginForm("BackToGenerate", "Examination", FormMethod.Post))
+{
+    <input type="hidden" name="courseId" value="@Model[0].CourseId" />
+    <input type="hidden" name="groupExam" value="@Model[0].ExamGroup" />
+    <button type="submit" class="btn btn-primary float-left mb-2">Delete Examinations</button>
+}
+@Styles.Render("~/bundles/content/datatables")
+@Styles.Render("~/bundle/content/tab")
+@Styles.Render("~/bundle/content/checkbox")
+<div class="tabs tabs-style-topline">
+    <nav>
+        <ul>
+            @foreach (var exam in Model)
+            {
+                no++;
+
+                <li><a href="#generate-exam-@exam.Id"><span>Exam @no</span></a></li>
+            }
+        </ul>
+    </nav>
+
+    <div class="content-wrap">
+        @foreach (var exam in Model)
+        {
+            <section id="generate-exam-@exam.Id">
+                @{
+                    counter++;
+                }
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Examination Code : @exam.ExamCode</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        </div>
+                        <div>
+                            <table class="table table-striped text-custom" id="dataTableExam-@counter" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Code</th>
+                                        <th>Question</th>
+                                        <th>Level</th>
+                                        <th>Topic/Learning Outcome</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var part in exam.PartOfExam)
+                                    {
+                                        foreach (var question in part.Question)
+                                        {
+                                            <tr>
+                                                <td></td>
+                                                <td>@question.QuestionCode</td>
+                                                <td>
+                                                    <div>
+                                                        <p>@question.QuestionContent</p>
+                                                        @if (question.Images != null)
+                                                        {
+                                                            foreach (var image in question.Images)
+                                                            {
+                                                                <p><img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" /></p>
+                                                            }
+                                                        }
+                                                        @{int charater = 0; }
+                                                        @foreach (var option in question.Options)
+                                                        {
+                                                            char prefixOption = (char)(charater + 65);
+                                                            if (option.IsCorrect == true)
+                                                            {
+                                                                <div class="row">
+                                                                    <div class="container-fluid text-right-answer">
+                                                                        @prefixOption.ToString(). @option.OptionContent
+                                                                    </div>
+                                                                    @if (option.Images != null)
+                                                                    {
+                                                                        foreach (var image in option.Images)
+                                                                        {
+                                                                            <br />
+                                                                            <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="row">
+                                                                    <div class="container-fluid">
+                                                                        @prefixOption.ToString(). @option.OptionContent
+                                                                    </div>
+                                                                    @if (option.Images != null)
+                                                                    {
+                                                                        foreach (var image in option.Images)
+                                                                        {
+                                                                            <br />
+                                                                            <img class="exam-image" onclick="img_zoom(this)" src="data:image/png;base64, @image.Source" />
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            }
+                                                            charater++;
+                                                        }
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @question.Level.Name
+                                                </td>
+                                                <td>
+                                                    @if (part.LearningOutcome != null)
+                                                    {
+                                                        @Html.DisplayFor(lo => part.LearningOutcome.Name)
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <button class="delete-question btn-danger btn" data-question-id="@question.Id"><i class='fas fa-trash-alt'></i></button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <form id="exportExamination">
+                    <div class="row form-group">
+                        <div>
+                            <h5>File extension :</h5>
+                        </div>
+                        <input type="hidden" name="examinationId-@counter" value="@exam.Id" />
+                        <input type="hidden" name="examGroup-@counter" value="@exam.ExamGroup" />
+
+                        <div class="col-lg-2">
+                            <select id="fileExtension-@counter" class="form-control">
+                                <option value="xml">XML</option>
+                                <option value="gift">GIFT</option>                                
+                            </select>
+                        </div>
+                        <input type="button" name="Export" data-value="@counter" value="Export" class="btn btn-primary float-right btnExport" />
+                    </div>
+                    <div class="row form-group">
+                        <div class="el-checkbox text-center">
+                            <span class="margin-r" style="font-size:1.3em;">Export All : </span>
+                            <input type="checkbox" name="exportAll" id="exportAll-@counter">
+                            <label class="el-checkbox-style" for="exportAll-@counter"></label>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        }
+    </div><!-- /content -->
+</div><!-- /tabs -->
+@Scripts.Render("~/bundles/script/datatables")
+@Scripts.Render("~/bundle/scripts/smartwizard")
+@Scripts.Render("~/bundle/scripts/tab")
+@Scripts.Render("~/bundle/scripts/confirmbox")
